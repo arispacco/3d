@@ -29,8 +29,9 @@ const BoutiqueDecor = ({ shadowsEnabled = true }) => {
                 metalness: 0.7,
             }),
             pedestalAccent: new THREE.MeshStandardMaterial({
-                color: '#00d4ff',
-                emissive: '#00d4ff',
+                // Terracotta, not cyan-neon — matches the Boutique's warm brand identity.
+                color: '#C1502E',
+                emissive: '#C1502E',
                 emissiveIntensity: 1.5,
             }),
             frameBorder: new THREE.MeshStandardMaterial({

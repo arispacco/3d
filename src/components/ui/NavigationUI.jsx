@@ -21,7 +21,7 @@ const ROOMS = [
 const PIN_START_POSITION = { x: 50.5, y: 97 };
 
 const NavigationUI = () => {
-    const { currentRoom, isInRoom, requestExit, hasEntered, teleportTo, isTeleporting } = useScene();
+    const { currentRoom, isInRoom, requestExit, hasEntered, teleportTo, isTeleporting, openCatalog } = useScene();
     const { isMuted, toggleMute, globalVolume, setGlobalVolume } = useAudio();
     const { showTutorial, unlockAchievement } = useAchievements();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -229,6 +229,19 @@ const NavigationUI = () => {
                 >
                     <svg viewBox="0 0 24 24" className="icon-back">
                         <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                </button>
+            )}
+
+            {/* Boutique Catalog Button - Only visible inside the Studio room */}
+            {hasEntered && currentRoom === 'studio' && (
+                <button
+                    className="nav-btn catalog-btn"
+                    onClick={openCatalog}
+                    aria-label="Ouvrir le catalogue de la boutique"
+                >
+                    <svg viewBox="0 0 24 24" className="icon-catalog">
+                        <path d="M3 9l1-5h16l1 5M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13a3 3 0 006 0" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                 </button>
             )}

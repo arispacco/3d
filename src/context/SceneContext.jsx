@@ -15,6 +15,7 @@ export const SceneProvider = ({ children }) => {
     const [hasEntered, setHasEntered] = useState(false);  // Has user clicked entrance doors?
     const [exitRequested, setExitRequested] = useState(false); // Signal to request exit from room
     const [overlayContent, setOverlayContent] = useState(null); // Content for overlay (Studio monitor etc)
+    const [isCatalogOpen, setIsCatalogOpen] = useState(false); // Boutique 2D catalog overlay
 
     // Teleportation states
     const [teleportTarget, setTeleportTarget] = useState(null); // Room ID to teleport to
@@ -25,10 +26,19 @@ export const SceneProvider = ({ children }) => {
 
     // Inspecting state removed to avoid global re-renders
 
+    const openCatalog = useCallback(() => {
+        setIsCatalogOpen(true);
+    }, []);
+
+    const closeCatalog = useCallback(() => {
+        setIsCatalogOpen(false);
+    }, []);
+
     const enterRoom = useCallback((roomId) => {
         setCurrentRoom(roomId);
         setExitRequested(false); // Clear any pending exit request
         setOverlayContent(null); // Clear overlay on room change
+        setIsCatalogOpen(false); // Clear catalog on room change
 
         // Teleportation cleanup - if we just teleported in
         // Note: isFastTeleport is cleared by signalRoomReady, not here
@@ -42,12 +52,14 @@ export const SceneProvider = ({ children }) => {
         setCurrentRoom(null);
         setExitRequested(false);
         setOverlayContent(null);
+        setIsCatalogOpen(false);
     }, []);
 
     // Request exit - this signals to DoorSection to trigger exit animation
     const requestExit = useCallback(() => {
         setExitRequested(true);
         setOverlayContent(null);
+        setIsCatalogOpen(false);
     }, []);
 
     // Clear exit request - called by DoorSection after handling
@@ -143,6 +155,9 @@ export const SceneProvider = ({ children }) => {
         markEntered,
         openOverlay,    // Exposed
         closeOverlay,   // Exposed
+        isCatalogOpen,
+        openCatalog,
+        closeCatalog,
         isInRoom: currentRoom !== null,
         // Teleportation
         teleportTarget,
@@ -169,6 +184,9 @@ export const SceneProvider = ({ children }) => {
         markEntered,
         openOverlay,
         closeOverlay,
+        isCatalogOpen,
+        openCatalog,
+        closeCatalog,
         // Teleportation dependencies
         teleportTarget,
         isTeleporting,

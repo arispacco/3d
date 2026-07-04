@@ -1179,20 +1179,42 @@ const DoorSection = ({
                         </mesh>
 
                         {label === 'THE STUDIO' ? (
-                            /* === REAL 3D DOOR SLAB (Boutique only) ===
+                            /* === BOUTIQUE SHOPFRONT DOOR ===
                                Same hinge group / gsap.to(doorRef.current.rotation, ...) / enterRoom()
-                               logic above is untouched — only this leaf's geometry+material changes
-                               from a flat sketch texture to a lit panel. doorPaintedRef/doorMaterialRef
-                               simply stay unattached here (all their usages are already null-guarded). */
+                               logic above is untouched. Previously this leaf was a lit 3D box
+                               (meshStandardMaterial + a one-off pointLight to keep it from rendering
+                               black, since the rest of the app has no global scene lighting) — it read
+                               as an unfinished placeholder next to the other 3 doors' flat, unlit,
+                               hand-drawn sketch treatment. No hand-drawn "boutique" door artwork exists
+                               yet (the only texture on file for this label, drzwisocial.webp, is a
+                               leftover from the pre-pivot "social media" concept — Instagram/TikTok/
+                               YouTube icons — and no longer fits). Until that art exists, this renders
+                               a flat unlit "shopfront" built from plain color planes (same geometry
+                               convention — planeGeometry + meshBasicMaterial — as every other door),
+                               so it matches the others' flat aesthetic instead of standing out as a
+                               lit, textureless box. doorPaintedRef/doorMaterialRef stay unattached
+                               here (all their usages are already null-guarded). */
                             <>
-                                <mesh position={[doorMeshX, -0.2, 0]} castShadow receiveShadow>
-                                    <boxGeometry args={[doorWidth, doorHeight, 0.05]} />
-                                    <meshStandardMaterial color="#3a332c" roughness={0.55} metalness={0.05} />
+                                {/* Terracotta door leaf */}
+                                <mesh position={[doorMeshX, -0.2, 0]}>
+                                    <planeGeometry args={[doorWidth, doorHeight]} />
+                                    <meshBasicMaterial color="#8A4A35" side={THREE.DoubleSide} />
                                 </mesh>
-                                {/* This door slab is a lit MeshStandardMaterial, but there is no global
-                                    scene lighting (rest of the app is unlit meshBasicMaterial) — a small
-                                    local light keeps it from rendering pure black. */}
-                                <pointLight position={[doorMeshX, 0.6, 0.6]} intensity={0.6} distance={2.5} color="#fff4e0" />
+                                {/* Ocre awning strip near the top, reads as a shopfront canopy */}
+                                <mesh position={[doorMeshX, -0.2 + doorHeight * 0.36, 0.002]}>
+                                    <planeGeometry args={[doorWidth * 1.08, doorHeight * 0.1]} />
+                                    <meshBasicMaterial color="#E09F3E" side={THREE.DoubleSide} />
+                                </mesh>
+                                {/* Pale glazed "vitrine" pane below the awning */}
+                                <mesh position={[doorMeshX, -0.2 + doorHeight * 0.12, 0.002]}>
+                                    <planeGeometry args={[doorWidth * 0.72, doorHeight * 0.38]} />
+                                    <meshBasicMaterial color="#F7F4EE" transparent opacity={0.5} side={THREE.DoubleSide} />
+                                </mesh>
+                                {/* Back face so the reverse side isn't a black hole while walking through */}
+                                <mesh position={[doorMeshX, -0.2, -0.01]} rotation={[0, Math.PI, 0]}>
+                                    <planeGeometry args={[doorWidth, doorHeight]} />
+                                    <meshBasicMaterial color="#8A4A35" side={THREE.DoubleSide} />
+                                </mesh>
                             </>
                         ) : (
                             <>

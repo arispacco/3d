@@ -9,7 +9,10 @@ import { RoundedBox } from '@react-three/drei';
  * shape beyond pointing `modelPath` at the new asset.
  */
 
-const ACCENT_COLOR = '#00d4ff';
+// Warm terracotta accent — matches the Boutique's Hakkilo XR brand identity
+// (African-inspired palette), deliberately not the generic cyan/blue-neon
+// "futuristic tech" cliché.
+const ACCENT_COLOR = '#C1502E';
 
 export const VRHeadsetModel = () => (
     <group>

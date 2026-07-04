@@ -11,6 +11,7 @@ import { PerformanceProvider, usePerformance } from './context/PerformanceContex
 import { SceneProvider } from './context/SceneContext';
 import NavigationUI from './components/ui/NavigationUI';
 import GlobalOverlay from './components/ui/GlobalOverlay';
+import BoutiqueCatalog from './components/ui/BoutiqueCatalog';
 import ScreenReaderOverlay from './components/ui/ScreenReaderOverlay';
 import posthog from 'posthog-js';
 
@@ -180,6 +181,7 @@ function AppContent() {
             <>
               <NavigationUI />
               <GlobalOverlay />
+              <BoutiqueCatalog />
               <PaperTransition />
               <ScreenReaderOverlay />
             </>

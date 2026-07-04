@@ -116,6 +116,18 @@
     }
 }
 
+// === BOUTIQUE CATALOG BUTTON (Studio room only) ===
+.catalog-btn {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    animation: fadeSlideDown 0.3s ease-out;
+
+    svg {
+        stroke: #C1502E; // terracotta — matches the Boutique's warm brand accent
+    }
+}
+
 // === RIGHT SIDE CONTROLS ===
 .nav-controls {
     position: fixed;

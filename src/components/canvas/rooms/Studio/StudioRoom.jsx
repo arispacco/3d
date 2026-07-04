@@ -371,7 +371,27 @@ const StudioRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
                     ease: 'power2.inOut',
                     onComplete: () => {
                         setIsAnimating(false);
-                        openOverlay(item);
+
+                        // Project the product's real world position (after the cluster's
+                        // rotation and the camera's zoom/pan tween have both settled) into
+                        // normalized screen-space %, so GlobalOverlay can align its spotlight
+                        // mask and card to where the product actually ended up on screen
+                        // instead of a hardcoded guess — the previous fixed 31%/50% mask
+                        // position was tuned for the old monitor-tower layout and drifted out
+                        // of alignment with the boutique's responsive pan/zoom math.
+                        let focusScreen = null;
+                        const productRef = productRefs.current[item.index];
+                        if (productRef) {
+                            const worldPos = new THREE.Vector3();
+                            productRef.getWorldPosition(worldPos);
+                            const ndc = worldPos.project(camera);
+                            focusScreen = {
+                                xPct: THREE.MathUtils.clamp((ndc.x * 0.5 + 0.5) * 100, 4, 96),
+                                yPct: THREE.MathUtils.clamp((1 - (ndc.y * 0.5 + 0.5)) * 100, 4, 96),
+                            };
+                        }
+
+                        openOverlay({ ...item, focusScreen });
                     }
                 });
             }
@@ -568,7 +588,7 @@ const ProductBlock = memo(({ item, meshRef, isSelected, onProductClick, disabled
                 </mesh>
             )}
             {isSelected && (
-                <pointLight color="#00d4ff" intensity={0.6} distance={0.6} />
+                <pointLight color="#E09F3E" intensity={0.6} distance={0.6} />
             )}
         </group>
     );

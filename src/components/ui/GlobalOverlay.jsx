@@ -209,6 +209,15 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
 
     // --- KONFIGURACJA STYLU KARTKI (POZYCJA) ---
     // Używamy % lub vw/vh dla fluid-responsywności.
+    // When the 3D scene tells us exactly where the focused object landed on screen
+    // (content.focusScreen, set by StudioRoom's camera-projection math), anchor the
+    // card to whichever side has room instead of always assuming "right" — the fixed
+    // right-side default drifted out of frame whenever the product's actual on-screen
+    // position (driven by responsive zoom/pan values) ended up past the screen's
+    // midpoint, which is what made the product-focus card look misaligned.
+    const focusScreen = content.focusScreen;
+    const cardOnLeft = !isMobile && focusScreen && focusScreen.xPct >= 50;
+
     const cardStyle = isMobile ? {
         // MOBILE: Karta na dole
         width: '90%',
@@ -218,8 +227,16 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
         transform: isOpen ? 'translate(-50%, 0) rotate(-1deg)' : 'translate(-50%, 120%) rotate(10deg)',
         opacity: isOpen ? 1 : 0,
         color: '#1a1a1a',
+    } : cardOnLeft ? {
+        // DESKTOP, focused object on the right half of the screen: card goes left instead
+        width: 'clamp(280px, 30vw, 450px)',
+        left: 'clamp(2rem, 12vw, 20rem)',
+        top: '50%',
+        transform: isOpen ? 'translateY(-50%) rotate(-1deg)' : 'translate(-150%, -50%) rotate(-15deg)',
+        opacity: isOpen ? 1 : 0,
+        color: '#1a1a1a',
     } : {
-        // DESKTOP: Karta po prawej
+        // DESKTOP: Karta po prawej (default)
         width: 'clamp(280px, 30vw, 450px)', // <--- FLUID
         right: 'clamp(2rem, 12vw, 20rem)', // <--- FLUID: scales with viewport
         top: '50%',
@@ -237,18 +254,24 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
     });
 
     // --- KONFIGURACJA MASKI (SPOTLIGHT - CZARNA DZIURA) ---
+    // Prefer the real projected screen position of the focused 3D object when we have
+    // one (content.focusScreen) — falls back to the old hardcoded guesses for content
+    // that isn't tied to a specific 3D focus point (e.g. the certificate grid, or any
+    // future overlay content that doesn't pass focusScreen).
+    const maskCenter = focusScreen
+        ? `${focusScreen.xPct}% ${focusScreen.yPct}%`
+        : isMobile ? '50% 25%' : '31% 50%';
     const maskStyle = (content.layout === 'certificate_grid') ? {
         maskImage: 'none',
         WebkitMaskImage: 'none'
     } : isMobile ? {
-        // Mobile: Monitor jest na górze (50% szerokości, 25% wysokości od góry)
-        maskImage: 'radial-gradient(circle at 50% 25%, transparent 0%, transparent 15%, black 40%)',
-        WebkitMaskImage: 'radial-gradient(circle at 50% 25%, transparent 0%, transparent 15%, black 40%)'
+        // Mobile: hole roughly where the focused object sits (top area by default)
+        maskImage: `radial-gradient(circle at ${maskCenter}, transparent 0%, transparent 15%, black 40%)`,
+        WebkitMaskImage: `radial-gradient(circle at ${maskCenter}, transparent 0%, transparent 15%, black 40%)`
     } : {
-        // Desktop: Monitor jest po lewej (31% szerokości od lewej, 50% wysokości)
-        // WPROWADZONE PRZEZ UZYTKOWNIKA 31%
-        maskImage: 'radial-gradient(circle at 31% 50%, transparent 0%, transparent 12%, black 35%)',
-        WebkitMaskImage: 'radial-gradient(circle at 31% 50%, transparent 0%, transparent 12%, black 35%)'
+        // Desktop: hole roughly where the focused object sits (left-of-center by default)
+        maskImage: `radial-gradient(circle at ${maskCenter}, transparent 0%, transparent 12%, black 35%)`,
+        WebkitMaskImage: `radial-gradient(circle at ${maskCenter}, transparent 0%, transparent 12%, black 35%)`
     };
 
     return (
